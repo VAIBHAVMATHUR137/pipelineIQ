@@ -1,0 +1,121 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+//User table
+
+model User{
+  id Int @id @default(autoincrement())
+  name String
+  email String @unique
+  password String
+}
+
+//Contact Person Profile
+enum Profile{
+  HR
+  INTERN
+  TEAM_LEAD
+  CTO
+  FOUNDER
+  SDE
+}
+
+model ContactPersonProfile{
+  id Int @id @default(autoincrement())
+  rank Profile @default(HR)
+}
+
+//Pipeline positive response
+enum Stage{
+  ASSIGNMENT
+  INTERVIEW
+  JOB_OFFER
+}
+model PipelineType{
+  id Int @id @default(autoincrement())
+  stage Stage @default(Assignment)
+}
+
+/Medium of application 
+
+enum Mode{
+  PERSONAL_CONTACT
+  LINKEDIN_DM
+  OFFICIAL_EMAIL
+  COMPANY_WEBSITE
+  MEDIUM_OF_JOB_POST
+  OFFLINE_JOB_AGENCY
+}
+model ApplicationMediumTable{
+  id Int @id @default(autoincrement())
+  medium Mode @default(LINKEDIN_DM)
+}
+
+//Platform table
+enum Platform{
+  LINKEDIN
+  NAUKRI
+  MONSTER
+  WELLFOUND
+  INDEED
+  INSTAHYRE
+  SHINE
+  INTERNSHALA
+}
+
+model PlatformTable{
+  id Int @id @default(autoincrement())
+  platform Platform @default(LINKEDIN)
+}
+
+//EMPLOYMENT TYPE
+enum EmploymentType{
+  FULL_TIME
+  PART_TIME
+  CONTRACTUAL
+  PPO_BASED_INTERNSHIP
+  INTERNSHIP_PAID
+  INTERNSHIP_UNPAID
+}
+
+model EmploymentTable{
+  id Int @id @default(autoincrement())
+  employment EmploymentType @default(INTERNSHIP_UNPAID)
+}
+
+//Profile lookup table
+model ContactPersonProfile {
+  id            Int    @id @default(autoincrement())
+  rank          String @unique
+  contacts      Contacts[]
+}
+
+model Contacts {
+  id     Int    @id @default(autoincrement())
+  name   String
+  linkedinURL String?
+  roleId Int
+
+  profile ContactPersonProfile @relation(
+    fields: [roleId],
+    references: [id]
+  )
+}
+//Company table
+model Company{
+  id  Int @id @default(autoincrement())
+  name String 
+  location String
+  sourceID Int 
+}
