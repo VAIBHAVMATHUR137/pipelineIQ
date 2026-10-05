@@ -21,101 +21,98 @@ model User{
   password String
 }
 
-//Contact Person Profile
-enum Profile{
-  HR
-  INTERN
-  TEAM_LEAD
-  CTO
-  FOUNDER
+// Here comes only the lookup tables
+enum Designation{
+  HR,
+  INTERN,
+  TEAM_LEAD,
+  CTO,
+  FOUNDER,
   SDE
 }
-
 model ContactPersonProfile{
   id Int @id @default(autoincrement())
-  rank Profile @default(HR)
+  rank  Designation @unique
+  contacts ContactsTable[]
 }
-
-//Pipeline positive response
 enum Stage{
-  ASSIGNMENT
-  INTERVIEW
+  ASSIGNMENT,
+  INTERVIEW,
   JOB_OFFER
 }
+
 model PipelineType{
-  id Int @id @default(autoincrement())
-  stage Stage @default(Assignment)
+  id  Int @id @default(autoincrement())
+  stage Stage
 }
 
-/Medium of application 
-
-enum Mode{
-  PERSONAL_CONTACT
-  LINKEDIN_DM
-  OFFICIAL_EMAIL
-  COMPANY_WEBSITE
-  MEDIUM_OF_JOB_POST
+enum Medium{
+  PERSONAL_CONTACT,
+  LINKEDIN_DM,
+  OFFICIAL_EMAIL,
+  COMPANY_WEBSITE,
+  MEDIUM_OF_JOB_POST,
   OFFLINE_JOB_AGENCY
 }
+
 model ApplicationMediumTable{
-  id Int @id @default(autoincrement())
-  medium Mode @default(LINKEDIN_DM)
+  mediumID    Int @id @default(autoincrement())
+  medium Medium
 }
 
-//Platform table
 enum Platform{
-  LINKEDIN
-  NAUKRI
-  MONSTER
-  WELLFOUND
-  INDEED
-  INSTAHYRE
-  SHINE
+  LINKEDIN,
+  NAUKRI,
+  MONSTER,
+  WELLFOUND,
+  SHINE,
+  INSTAHYRE,
+  INDEED,
   INTERNSHALA
 }
 
 model PlatformTable{
-  id Int @id @default(autoincrement())
-  platform Platform @default(LINKEDIN)
+  platformID    Int @id @default(autoincrement())
+  platform Platform @unique
+  companies  CompanyTable[]
 }
 
-//EMPLOYMENT TYPE
-enum EmploymentType{
+enum EmpType{
+  PART_TIME,
+  CONTRACTUAL,
+  PPO_BASED_INTERNSHIP,
+  INTERNSHIP_PAID,
+  INTERNSHIP_UNPAID,
   FULL_TIME
-  PART_TIME
-  CONTRACTUAL
-  PPO_BASED_INTERNSHIP
-  INTERNSHIP_PAID
-  INTERNSHIP_UNPAID
 }
 
-model EmploymentTable{
-  id Int @id @default(autoincrement())
-  employment EmploymentType @default(INTERNSHIP_UNPAID)
+model EmploymentTypeTable{
+  empTypeID   Int @id @default(autoincrement())
+  empType EmpType
 }
 
-//Profile lookup table
-model ContactPersonProfile {
-  id            Int    @id @default(autoincrement())
-  rank          String @unique
-  contacts      Contacts[]
-}
-
-model Contacts {
-  id     Int    @id @default(autoincrement())
-  name   String
-  linkedinURL String?
-  roleId Int
-
-  profile ContactPersonProfile @relation(
-    fields: [roleId],
-    references: [id]
+model ContactsTable{
+  id    Int @id @default(autoincrement())
+  name String 
+  companyID Int
+  roleID Int 
+  roleInfo  ContactPersonProfile @relation(
+    fields:[roleID],
+    references:[id]
+  )
+  companyInfo CompanyTable @relation(
+    fields:[companyID],
+    references:[ID]
   )
 }
-//Company table
-model Company{
-  id  Int @id @default(autoincrement())
-  name String 
-  location String
-  sourceID Int 
+
+model CompanyTable{
+    id    Int @id @default(autoincrement())
+    name String  @unique
+    location String
+    sourceID  Int
+    platformInfo  PlatformTable @relation(
+      fields:[sourceID],
+      references:[platformID]
+    )
 }
