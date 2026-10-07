@@ -75,6 +75,7 @@ model PlatformTable{
   platformID    Int @id @default(autoincrement())
   platform Platform @unique
   companies  CompanyTable[]
+  jobroles JobroleTable[]
 }
 
 enum EmpType{
@@ -88,7 +89,8 @@ enum EmpType{
 
 model EmploymentTypeTable{
   empTypeID   Int @id @default(autoincrement())
-  empType EmpType
+  empType EmpType @unique
+  jobOpportunities  JobroleTable[]
 }
 
 model ContactsTable{
@@ -115,4 +117,37 @@ model CompanyTable{
       fields:[sourceID],
       references:[platformID]
     )
+    jobInfo  JobroleTable @relation(
+      fields:[id],
+      references:[companyID]
+    )
+}
+
+model JobroleTable{
+  id  Int @id @default(autoincrement())
+  companyID Int @unique
+  title String
+  sourceID Int 
+  location String
+  empType Int @unique
+
+  sourceInfo  PlatformTable @relation(
+    fields:[sourceID],
+    references:[platformID]
+  )
+  employmentInfo EmploymentTypeTable @relation(
+    fields:[empType],
+    references:[empTypeID]
+  )
+
+}
+model OutcomeTable{
+  id Int @id 
+  time_Of_Approach DateTime
+  time_Of_Response DateTime
+  teplyStatusID Int 
+  companyID Int 
+  contactID Int
+  mediumID Int 
+  platformID Int 
 }
