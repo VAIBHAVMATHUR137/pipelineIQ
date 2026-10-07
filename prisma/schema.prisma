@@ -58,6 +58,7 @@ enum Medium{
 model ApplicationMediumTable{
   mediumID    Int @id @default(autoincrement())
   medium Medium
+  mediumOfContact Medium[]
 }
 
 enum Platform{
@@ -76,6 +77,7 @@ model PlatformTable{
   platform Platform @unique
   companies  CompanyTable[]
   jobroles JobroleTable[]
+  outcomes OutcomeTable[]
 }
 
 enum EmpType{
@@ -139,15 +141,30 @@ model JobroleTable{
     fields:[empType],
     references:[empTypeID]
   )
+  outcomeInfo OutcomeTable @relation(
+    fields:[companyID],
+    references:[companyID]
+  )
 
 }
 model OutcomeTable{
-  id Int @id 
+  id Int @id @default(autoincrement())
   time_Of_Approach DateTime
   time_Of_Response DateTime
-  teplyStatusID Int 
+  outcomeID Int 
+  replyStatusID Int 
   companyID Int 
   contactID Int
   mediumID Int 
   platformID Int 
+
+  platformInfo PlatformTable @relation(
+    fields:[platformID],
+    references:[platformID]
+  )
+  mediumInfo ApplicationMediumTable @relation(
+    fields:[mediumID],
+    references:[mediumID]
+  )
+
 }
