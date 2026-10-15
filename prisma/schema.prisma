@@ -21,150 +21,26 @@ model User{
   password String
 }
 
-// Here comes only the lookup tables
-enum Designation{
-  HR,
-  INTERN,
-  TEAM_LEAD,
-  CTO,
-  FOUNDER,
+enum Designation {
+  HR
+  INTERN
+  TEAM_LEAD
+  CTO
+  FOUNDER
   SDE
 }
+
 model ContactPersonProfile{
-  id Int @id @default(autoincrement())
-  rank  Designation @unique
+  id  Int @id @default(autoincrement())
+  rank Designation @unique
   contacts ContactsTable[]
 }
-enum Stage{
-  ASSIGNMENT,
-  INTERVIEW,
-  JOB_OFFER
-}
 
-model PipelineType{
-  id  Int @id @default(autoincrement())
-  stage Stage
-}
-
-enum Medium{
-  PERSONAL_CONTACT,
-  LINKEDIN_DM,
-  OFFICIAL_EMAIL,
-  COMPANY_WEBSITE,
-  MEDIUM_OF_JOB_POST,
-  OFFLINE_JOB_AGENCY
-}
-
-model ApplicationMediumTable{
-  mediumID    Int @id @default(autoincrement())
-  medium Medium
-  mediumOfContact Medium[]
-}
-
-enum Platform{
-  LINKEDIN,
-  NAUKRI,
-  MONSTER,
-  WELLFOUND,
-  SHINE,
-  INSTAHYRE,
-  INDEED,
-  INTERNSHALA
-}
-
-model PlatformTable{
-  platformID    Int @id @default(autoincrement())
-  platform Platform @unique
-  companies  CompanyTable[]
-  jobroles JobroleTable[]
-  outcomes OutcomeTable[]
-}
-
-enum EmpType{
-  PART_TIME,
-  CONTRACTUAL,
-  PPO_BASED_INTERNSHIP,
-  INTERNSHIP_PAID,
-  INTERNSHIP_UNPAID,
-  FULL_TIME
-}
-
-model EmploymentTypeTable{
-  empTypeID   Int @id @default(autoincrement())
-  empType EmpType @unique
-  jobOpportunities  JobroleTable[]
-}
-
-model ContactsTable{
-  id    Int @id @default(autoincrement())
-  name String 
+model ContactsTable {
+  id        Int    @id @default(autoincrement())
+  name      String
   companyID Int
-  roleID Int 
-  roleInfo  ContactPersonProfile @relation(
-    fields:[roleID],
-    references:[id]
-  )
-  companyInfo CompanyTable @relation(
-    fields:[companyID],
-    references:[ID]
-  )
-}
+  profileID Int
 
-model CompanyTable{
-    id    Int @id @default(autoincrement())
-    name String  @unique
-    location String
-    sourceID  Int
-    platformInfo  PlatformTable @relation(
-      fields:[sourceID],
-      references:[platformID]
-    )
-    jobInfo  JobroleTable @relation(
-      fields:[id],
-      references:[companyID]
-    )
-}
-
-model JobroleTable{
-  id  Int @id @default(autoincrement())
-  companyID Int @unique
-  title String
-  sourceID Int 
-  location String
-  empType Int @unique
-
-  sourceInfo  PlatformTable @relation(
-    fields:[sourceID],
-    references:[platformID]
-  )
-  employmentInfo EmploymentTypeTable @relation(
-    fields:[empType],
-    references:[empTypeID]
-  )
-  outcomeInfo OutcomeTable @relation(
-    fields:[companyID],
-    references:[companyID]
-  )
-
-}
-model OutcomeTable{
-  id Int @id @default(autoincrement())
-  time_Of_Approach DateTime
-  time_Of_Response DateTime
-  outcomeID Int 
-  replyStatusID Int 
-  companyID Int 
-  contactID Int
-  mediumID Int 
-  platformID Int 
-
-  platformInfo PlatformTable @relation(
-    fields:[platformID],
-    references:[platformID]
-  )
-  mediumInfo ApplicationMediumTable @relation(
-    fields:[mediumID],
-    references:[mediumID]
-  )
-
+  profile ContactPersonProfile @relation(fields: [profileID], references: [id])
 }
