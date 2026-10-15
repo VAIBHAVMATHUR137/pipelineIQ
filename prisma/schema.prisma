@@ -38,9 +38,61 @@ model ContactPersonProfile{
 
 model ContactsTable {
   id        Int    @id @default(autoincrement())
-  name      String
+  name      String?
   companyID Int
   profileID Int
 
   profile ContactPersonProfile @relation(fields: [profileID], references: [id])
+  company CompanyTable    @relation(fields:[companyID],references:[id])
+
+}
+//lookup table for platform and type of employment
+
+enum PlatformType{
+  PERSONAL_CONTACT
+  LINKEDIN_DM
+  OFFICIAL_EMAIL
+  COMPANY_WEBSITE
+  MEDIUM_OF_JOB_POST
+  OFFLINE_JOB_AGENCY
+  LINKEDIN
+  NAUKRI
+  MONSTER
+  WELLFOUND
+  INDEED
+  INSTAHYRE
+  INTERNSHALA
+}
+
+model platformTable{
+  id Int @id @default(autoincrement())
+  platform PlatformType @unique
+  client CompanyTable[]
+}
+
+enum emp{
+    PART_TIME
+    CONTRACTUAL
+    PPO_BASED_INTERNSHIP
+    PAID_INTERNSHIP
+    UNPAID_INTERNSHIP
+    FULL_TIME
+}
+
+model employmentTypeTable{
+  id    Int   @id   @default(autoincrement())
+  empType emp @unique
+  companies CompanyTable[]
+}
+
+model CompanyTable{
+    id    Int   @id   @default(autoincrement())
+    name    String   
+    location    String
+    title   String
+    emp_type    Int
+    source_id   Int 
+    platform platformTable @relation(fields:[source_id],references:[id])
+    employment  employmentTypeTable @relation(fields:[emp_type],references:[id])
+    contacts ContactsTable[]
 }
