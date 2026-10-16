@@ -42,8 +42,11 @@ model ContactsTable {
   companyID Int
   profileID Int
 
+  outreachRelation outreachTable[]
+
   profile ContactPersonProfile @relation(fields: [profileID], references: [id])
   company CompanyTable    @relation(fields:[companyID],references:[id])
+ 
 
 }
 //lookup table for platform and type of employment
@@ -92,7 +95,59 @@ model CompanyTable{
     title   String
     emp_type    Int
     source_id   Int 
+
     platform platformTable @relation(fields:[source_id],references:[id])
     employment  employmentTypeTable @relation(fields:[emp_type],references:[id])
+
+    outreach outreachTable[]
     contacts ContactsTable[]
+}
+
+//lookup table for reply
+enum replyType{
+  LEFT_ON_SEE
+  REFERRED_TO_OTHER
+  SOFT_REJECT
+  OUTRIGHT_REJECT
+  POSITIVE
+  GHOSTED
+}
+model replyTable{
+  id    Int   @id   @default(autoincrement())
+  reply replyType @unique
+  replyRelation responseTable[]
+}
+enum  stageType{
+  ASSIGNMENT
+  INTERVIEW
+  JOB_OFFER
+  WAITING_FOR_PROCESS
+}
+model stageTable{
+  id    Int   @id   @default(autoincrement())
+  stage  stageType @unique
+  stageRelation responseTable[]
+}
+model outreachTable{
+  id    Int   @id @default(autoincrement())
+  companyID   Int 
+  contactID   Int   
+  time_of_approach  DateTime
+  followUpOf Int?
+  response responseTable[]
+  company CompanyTable @relation(fields:[companyID],references:[id])
+  contact ContactsTable @relation(fields:[contactID],references:[id])
+
+
+}
+model responseTable{
+  id    Int @id @default(autoincrement())
+  time_of_reply   DateTime
+  outreach_id Int
+  reply_id  Int
+  positive_response  Int
+  stage_id    Int
+  outreach outreachTable @relation(fields:[outreach_id],references:[id])
+  reply replyTable @relation(fields:[reply_id], references:[id])
+  stage stageTable @relation(fields:[stage_id],references:[id])
 }
