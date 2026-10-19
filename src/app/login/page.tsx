@@ -1,7 +1,9 @@
-"use Client";
+"use client";
 import loginImage from "../Images/loginImage.jpg";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 export const login = () => {
+    const router=useRouter()
   return (
     <div className="flex justify-center">
       <div className=" w-[70vw] h-[90vh] flex justify-center items-center bg-[#0d0c22]">
@@ -27,10 +29,10 @@ export const login = () => {
               />
             </label>
 
-            <button className="rounded-full border bg-green-600 p-2 m-4 hover:scale-110 transition-transform duration-300">
+            <button className="rounded-full border bg-green-600 p-2 m-4 hover:scale-110 transition-transform duration-300 cursor-pointer">
               Login
             </button>
-            <a href="/" className="hover:text-blue-700 hover:underline">New User? Register yourself</a>
+            <a href="/register" className="hover:text-blue-700 hover:underline" onClick={()=>router.push("/register")}> New User? Register yourself</a>
           </div>
         </div>
       </div>
