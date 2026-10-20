@@ -2,8 +2,14 @@
 import registerImage from "../Images/registerImage.jpg"
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { ChangeEvent } from "react";
+import { useDispatch } from "react-redux";
+import {type AppDispatch } from "../redux/store";
+import { change } from "../redux/slice";
 export const register=()=>{
+  const dispatch=useDispatch<AppDispatch>()
     const router=useRouter()
+
         return(
         <div>
              <div className="flex justify-center">
@@ -17,6 +23,9 @@ export const register=()=>{
                 type="text"
                 id="name"
                 className="block w-full border m-2 p-2"
+                onChange={(event:ChangeEvent<HTMLInputElement>)=>{
+                  dispatch(change({field:"name",value:event.target.value}))
+                }}
               />
             </label>
             <label htmlFor="email" className="block">
@@ -25,6 +34,9 @@ export const register=()=>{
                 type="email"
                 id="email"
                 className="block w-full border m-2 p-2"
+                onChange={(event:ChangeEvent<HTMLInputElement>)=>{
+                  dispatch(change({field:"email",value:event.target.value}))
+                }}
               />
             </label>
 
@@ -35,6 +47,9 @@ export const register=()=>{
                 id="password"
                 name="password"
                 className="block w-full border m-2 p-2"
+                onChange={(event:ChangeEvent<HTMLInputElement>)=>{
+                  dispatch(change({field:"password",value:event.target.value}))
+                }}
               />
             </label>
 
