@@ -2,13 +2,20 @@
 import loginImage from "../Images/loginImage.jpg";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useDispatch } from "react-redux";
-import { type AppDispatch } from "../redux/store";
+import { useDispatch, useSelector } from "react-redux";
+import { type RootState, type AppDispatch } from "../redux/store";
 import { ChangeEvent } from "react";
 import { updateLogin } from "../redux/slice";
+import { loginPageValidator } from "../FormValidator";
 export const login = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const loginState=useSelector((state:RootState)=>state.login)
   const router = useRouter();
+  const validator=()=>{
+    const error=loginPageValidator(loginState);
+    const errorMessage=Object.values(error).flatMap(obj=>Object.values(obj))[0]
+    console.log(errorMessage)
+  }
   return (
     <div className="flex justify-center">
       <div className=" w-[70vw] h-[90vh] flex justify-center items-center bg-[#0d0c22]">
@@ -47,7 +54,8 @@ export const login = () => {
               />
             </label>
 
-            <button className="rounded-full border bg-green-600 p-2 m-4 hover:scale-110 transition-transform duration-300 cursor-pointer">
+            <button className="rounded-full border bg-green-600 p-2 m-4 hover:scale-110 transition-transform duration-300 cursor-pointer"
+            onClick={()=>validator()}>
               Login
             </button>
             <a
