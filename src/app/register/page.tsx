@@ -7,15 +7,39 @@ import { useDispatch, useSelector } from "react-redux";
 import { type RootState, type AppDispatch } from "../redux/store";
 import { change } from "../redux/slice";
 import { signinPageValidator } from "../FormValidator";
+import axios from "axios";
+import { baseURL } from "../axios/baseURL";
 export const register = () => {
   const dispatch = useDispatch<AppDispatch>();
   const signinState = useSelector((state: RootState) => state.user);
   const router = useRouter();
-  const validator=()=>{
-    const errors=signinPageValidator(signinState);
-    const errorMessage=Object.values(errors).flatMap(obj=>Object.values(obj))[0]
-    console.log(errorMessage)
-  }
+  const validator = () => {
+    const errors = signinPageValidator(signinState);
+    const errorMessage = Object.values(errors).flatMap((obj) =>
+      Object.values(obj),
+    )[0];
+    console.log(errorMessage);
+  };
+  const signinAPI = async () => {
+    try {
+      const res = await axios.post(`${baseURL}/api/signin`, {
+        name: signinState.name,
+        email: signinState.email,
+        password: signinState.password,
+      });
+      console.log(res)
+      if (res.status === 201) {
+        console.log(res);
+        router.push("/")
+        return true;
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.log(error);
+        return false;
+      }
+    }
+  };
   return (
     <div>
       <div className="flex justify-center">
@@ -69,8 +93,12 @@ export const register = () => {
                 />
               </label>
 
-              <button className="rounded-full border bg-green-600 p-2 m-4 hover:scale-110 transition-transform duration-300 cursor-pointer"
-              onClick={()=>validator()}>
+              <button
+                className="rounded-full border bg-green-600 p-2 m-4 hover:scale-110 transition-transform duration-300 cursor-pointer"
+                onClick={() => {
+                  signinAPI();
+                }}
+              >
                 Register Yourself
               </button>
               <a
