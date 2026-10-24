@@ -20,25 +20,28 @@ export const register = () => {
     )[0];
     console.log(errorMessage);
   };
-  const signinAPI = async () => {
+  const signinAPI = async (): Promise<{ success: boolean; error?: string }> => {
     try {
       const res = await axios.post(`${baseURL}/api/signin`, {
         name: signinState.name,
         email: signinState.email,
         password: signinState.password,
       });
-      console.log(res)
+      console.log(res);
       if (res.status === 201) {
-        console.log(res);
-        router.push("/")
-        return true;
+        router.push("/");
+        return { success: true };
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.log(error);
-        return false;
+        return { success: false, error: error.message };
       }
     }
+    return {
+      success: false,
+      error: "Something went wrong",
+    };
   };
   return (
     <div>

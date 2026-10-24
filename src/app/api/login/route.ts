@@ -1,34 +1,52 @@
-import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-export async function POST(request: NextResponse) {
-  try {
+import bcrypt from "bcryptjs";
+import "dotenv/config";
+import { NextRequest, NextResponse } from "next/server";
+import jwt from "jsonwebtoken";
+
+export async function POST(request: NextRequest) {
+
     const body = await request.json();
-    const { name, email, password } = body;
-    if (!email || !password || !name) {
+    const { email: userEmail, password } = body;
+    if (!userEmail || !password) {
       return NextResponse.json({
         message: "All fields are mandatory",
         status: 400,
       });
     }
-    const user = await prisma.user.create({
-      data: {
-        name,
-        email,
-        password,
+
+    const user = await prisma.user.findUnique({
+      where: {
+        email: userEmail,
       },
     });
-    return NextResponse.json(
+    if (!user) {
+      return NextResponse.json({
+        message: "User not found",
+        status: 400,
+      });
+    }
+    const validPassword: boolean = await bcrypt.compare(password, password);
+    if (!validPassword) {
+      return NextResponse.json({
+        message: "Invalid password",
+        status: 400,
+      });
+    }
+    const accesstoken = jwt.sign(userEmail, process.env.SECRET_ACCESS_TOKEN!, {
+      expiresIn: "10m",
+    });
+    const refreshtoken = jwt.sign(
+      userEmail,
+      process.env.SECRET_REFRESH_TOKEN!,
       {
-        message: "User created successfully",
-        user,
+        expiresIn: "30days",
       },
-      { status: 201 },
     );
-  } catch (error) {
-    console.log(error);
-    return NextResponse.json({
-        message:"Could not create user",
-        status:500
-    })
-  }
+    await 
+    try {
+        
+    } catch (error) {
+        
+    }
 }
