@@ -1,17 +1,31 @@
-"use client"
+"use client";
+
 import { useRouter } from "next/navigation";
 export const Navbar = () => {
-  const router=useRouter()
+  const router = useRouter();
   return (
     <div className="w-full h-auto p-6 flex justify-between items-center bg-transparent sticky top-0 z-50">
       <div className="cursor-pointer">
-        <span className="cursor-pointer" onClick={()=>router.push("/")}>Home</span>
+        <span className="cursor-pointer" onClick={() => router.push("/")}>
+          Home
+        </span>
       </div>
+
       <div className="space-x-4">
         <span className="cursor-pointer">GitHub</span>
-        <span className="cursor-pointer" onClick={()=>router.push("/login")}>Login</span>
+        <span className="cursor-pointer" onClick={() => router.push("/login")}>
+          Login
+        </span>
+        <span
+          className="cursor-pointer"
+          onClick={() => router.push("/dashboard")}
+        >
+          {" "}
+ 
+          dashboard
+        </span>
+
       </div>
     </div>
   );
 };
- 
