@@ -10,10 +10,7 @@ export async function POST(request: NextRequest) {
     const redis = await getRedis();
     const body = await request.json();
     const { email: userEmail, password } = body;
-    if (
-      !userEmail ||
-      !password 
-    ) {
+    if (!userEmail || !password) {
       return NextResponse.json(
         { message: "All fields are mandatory" },
         { status: 400 },
@@ -47,17 +44,29 @@ export async function POST(request: NextRequest) {
     await redis.set(`${userEmail}_Refresh_token`, refresh_token, {
       EX: 60 * 60 * 24 * 30,
     });
-    return NextResponse.json(
-      {
-        message: "Login successful",
-        access_token,
-        refresh_token,
-        userEmail,
-        userName,
-      },
+    const res = NextResponse.json(
+      { message: "Login successful", userEmail, userName },
       { status: 201 },
     );
-  } catch (error) {}
+    const base = {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax" as const,
+    };
+    res.cookies.set("access_token", access_token, {
+      ...base,
+      path: "/",
+      maxAge: 60 * 5,
+    });
+    res.cookies.set("refresh_token", refresh_token, {
+      ...base,
+      path: "/api/auth",
+      maxAge: 60 * 60 * 24 * 30,
+    });
+    return res;
+  } catch (error) {
+    console.log("Login Error "+error)
+  }
   return NextResponse.json(
     {
       message: "Trouble logging in",

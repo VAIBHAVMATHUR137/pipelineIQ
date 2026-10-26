@@ -5,17 +5,37 @@ import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { type RootState, type AppDispatch } from "../redux/store";
 import { ChangeEvent } from "react";
-import { updateLogin } from "../redux/slice";
+import { resetLogin, updateLogin } from "../redux/slice";
 import { loginPageValidator } from "../FormValidator";
+import axios from "axios";
+import { baseURL } from "../axios/baseURL";
 export const login = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const loginState=useSelector((state:RootState)=>state.login)
+  const loginState = useSelector((state: RootState) => state.login);
   const router = useRouter();
-  const validator=()=>{
-    const error=loginPageValidator(loginState);
-    const errorMessage=Object.values(error).flatMap(obj=>Object.values(obj))[0]
-    console.log(errorMessage)
-  }
+  const validator = () => {
+    const error = loginPageValidator(loginState);
+    const errorMessage = Object.values(error).flatMap((obj) =>
+      Object.values(obj),
+    )[0];
+    console.log(errorMessage);
+  };
+  const API = async () => {
+    try {
+      const res = await axios.post(`${baseURL}/api/login`, {
+        email: loginState.email,
+        password: loginState.password,
+      });
+      if (res.status === 201) {
+        dispatch(resetLogin());
+        router.push("/");
+      }
+    } catch (err) {
+      console.log(
+        axios.isAxiosError(err) ? err.response?.data?.message : "Login failed",
+      );
+    }
+  };
   return (
     <div className="flex justify-center">
       <div className=" w-[70vw] h-[90vh] flex justify-center items-center bg-[#0d0c22]">
@@ -54,14 +74,16 @@ export const login = () => {
               />
             </label>
 
-            <button className="rounded-full border bg-green-600 p-2 m-4 hover:scale-110 transition-transform duration-300 cursor-pointer"
-            onClick={()=>validator()}>
+            <button
+              className="rounded-full border bg-green-600 p-2 m-4 hover:scale-110 transition-transform duration-300 cursor-pointer"
+              onClick={() => API()}
+            >
               Login
             </button>
             <a
               href="/register"
               className="hover:text-blue-700 hover:underline"
-              onClick={() => router.push("/register")}
+              onClick={() => validator()}
             >
               {" "}
               New User? Register yourself

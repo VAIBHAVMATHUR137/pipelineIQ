@@ -1,5 +1,5 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-
+// Signup page state management
 interface User {
   id: Number;
   name: string;
@@ -27,7 +27,7 @@ export const userSlice = createSlice({
 });
 export const { resetUser, change } = userSlice.actions;
 export const userReducer = userSlice.reducer;
-
+// login page state management
 interface loginInterface {
   email: string;
   password: string;
@@ -51,3 +51,4 @@ export const loginSlice = createSlice({
 });
 export const {resetLogin,updateLogin}=loginSlice.actions;
 export const loginReducer=loginSlice.reducer;
+
