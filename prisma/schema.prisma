@@ -12,54 +12,37 @@ datasource db {
   provider = "postgresql"
 }
 
-//User table
+//Use table
 
-model User{
-  id Int @id @default(autoincrement())
-  name String
-  email String @unique
+model User {
+  id       Int             @id @default(autoincrement())
+  name     String
+  email    String          @unique
   password String
+  openings OpeningTable[]
+  outreach OutreachTable[]
+  response ResponseTable[]
 }
 
-enum Designation {
-  HR
-  INTERN
-  TEAM_LEAD
-  CTO
-  FOUNDER
-  SDE
-}
+model CompanyTable {
+  id   Int    @id @default(autoincrement())
+  name String
 
-model ContactPersonProfile{
-  id  Int @id @default(autoincrement())
-  rank Designation @unique
+  openings OpeningTable[]
   contacts ContactsTable[]
+  outreach OutreachTable[]
 }
 
-model ContactsTable {
-  id        Int    @id @default(autoincrement())
-  name      String?
-  companyID Int
-  profileID Int
-
-  outreachRelation outreachTable[]
-
-  profile ContactPersonProfile @relation(fields: [profileID], references: [id])
-  company CompanyTable    @relation(fields:[companyID],references:[id])
- 
-
-}
-//lookup table for platform and type of employment
-
-enum PlatformType{
+enum Platform {
   PERSONAL_CONTACT
   LINKEDIN_DM
   OFFICIAL_EMAIL
   COMPANY_WEBSITE
   MEDIUM_OF_JOB_POST
   OFFLINE_JOB_AGENCY
-  LINKEDIN
+  LINKEDIN_POST
   NAUKRI
+  SHINE
   MONSTER
   WELLFOUND
   INDEED
@@ -67,87 +50,126 @@ enum PlatformType{
   INTERNSHALA
 }
 
-model platformTable{
-  id Int @id @default(autoincrement())
-  platform PlatformType @unique
-  client CompanyTable[]
+model PlatformTable {
+  id       Int      @id @default(autoincrement())
+  platform Platform @unique
+
+  openings OpeningTable[]
 }
 
-enum emp{
-    PART_TIME
-    CONTRACTUAL
-    PPO_BASED_INTERNSHIP
-    PAID_INTERNSHIP
-    UNPAID_INTERNSHIP
-    FULL_TIME
+enum EmploymentType {
+  PAID_INTERNSHIP
+  PART_TIME
+  CONTRACTUAL
+  PPO_BASED_INTERNSHIP
+  UNPAID_INTERNSHIP
+  FULL_TIME
 }
 
-model employmentTypeTable{
-  id    Int   @id   @default(autoincrement())
-  empType emp @unique
-  companies CompanyTable[]
+model employmentTypeTable {
+  id       Int            @id @default(autoincrement())
+  emp_type EmploymentType
+  openings OpeningTable[]
 }
 
-model CompanyTable{
-    id    Int   @id   @default(autoincrement())
-    name    String   
-    location    String
-    title   String
-    emp_type    Int
-    source_id   Int 
+model OpeningTable {
+  id        Int    @id @default(autoincrement())
+  userID    Int
+  companyID Int
+  sourceID  Int
+  location  String
+  title     String
+  emp_type  Int
 
-    platform platformTable @relation(fields:[source_id],references:[id])
-    employment  employmentTypeTable @relation(fields:[emp_type],references:[id])
+  users      User                @relation(fields: [userID], references: [id])
+  company    CompanyTable        @relation(fields: [companyID], references: [id])
+  platform   PlatformTable       @relation(fields: [sourceID], references: [id])
+  employment employmentTypeTable @relation(fields: [emp_type], references: [id])
 
-    outreach outreachTable[]
-    contacts ContactsTable[]
+  @@unique([userID, companyID, sourceID])
 }
 
-//lookup table for reply
-enum replyType{
-  LEFT_ON_SEE
+enum rank {
+  HR
+  INTERN
+  CTO
+  FOUNDER
+  TEAM_LEAD
+  SDE
+}
+
+model ContactPersonProfile {
+  id       Int             @id @default(autoincrement())
+  Rank     rank            @unique
+  contacts ContactsTable[]
+}
+
+model ContactsTable {
+  id        Int    @id @default(autoincrement())
+  userID    Int
+  name      String
+  profileID Int
+  companyID Int
+
+  outreach OutreachTable[]
+  profile  ContactPersonProfile @relation(fields: [profileID], references: [id])
+  company  CompanyTable         @relation(fields: [companyID], references: [id])
+}
+
+model OutreachTable {
+  id               Int      @id @default(autoincrement())
+  userID           Int
+  companyID        Int
+  contactID        Int
+  time_of_approach DateTime
+  followUpOf       Int?
+
+  response ResponseTable[]
+  user     User            @relation(fields: [userID], references: [id])
+  company  CompanyTable    @relation(fields: [companyID], references: [id])
+  contacts ContactsTable   @relation(fields: [contactID], references: [id])
+}
+
+enum Reply {
+  LEFT_ON_SEEN
   REFERRED_TO_OTHER
   SOFT_REJECT
   OUTRIGHT_REJECT
   POSITIVE
   GHOSTED
 }
-model replyTable{
-  id    Int   @id   @default(autoincrement())
-  reply replyType @unique
-  replyRelation responseTable[]
+
+model ReplyTable {
+  id       Int             @id @default(autoincrement())
+  reply    Reply           @unique
+  response ResponseTable[]
 }
-enum  stageType{
+
+enum stage {
   ASSIGNMENT
   INTERVIEW
   JOB_OFFER
   WAITING_FOR_PROCESS
 }
-model stageTable{
-  id    Int   @id   @default(autoincrement())
-  stage  stageType @unique
-  stageRelation responseTable[]
-}
-model outreachTable{
+
+model StageTable {
   id    Int   @id @default(autoincrement())
-  companyID   Int 
-  contactID   Int   
-  time_of_approach  DateTime
-  followUpOf Int?
-  response responseTable[]
-  company CompanyTable @relation(fields:[companyID],references:[id])
-  contact ContactsTable @relation(fields:[contactID],references:[id])
+  Stage stage @unique
 
-
+  responses ResponseTable[]
 }
-model responseTable{
-  id    Int @id @default(autoincrement())
-  time_of_reply   DateTime
-  outreach_id Int
-  reply_id  Int
-  positive_response  Int
-  stage_id    Int
-  outreach outreachTable @relation(fields:[outreach_id],references:[id])
-  reply replyTable @relation(fields:[reply_id], references:[id])
-  stage stageTable @relation(fields:[stage_id],references:[id])
+
+model ResponseTable {
+  id                Int      @id @default(autoincrement())
+  userID            Int
+  time_of_reply     DateTime
+  outreach_id       Int
+  reply_id          Int
+  positive_response Int
+  stage_id          Int
+
+  user     User          @relation(fields: [userID], references: [id])
+  outreach OutreachTable @relation(fields: [outreach_id], references: [id])
+  stage    StageTable    @relation(fields: [stage_id], references: [id])
+  response ReplyTable    @relation(fields: [positive_response], references: [id])
 }

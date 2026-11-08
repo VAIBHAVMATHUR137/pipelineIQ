@@ -8,6 +8,7 @@ let refreshPromise: Promise<unknown> | null = null;
 api.interceptors.response.use(
   (res) => res,
   async (error: AxiosError) => {
+    // This block gets activated when response is failed
     const original = error.config as
       | (InternalAxiosRequestConfig & { _retry?: boolean })
       | undefined;
