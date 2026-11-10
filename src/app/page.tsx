@@ -1,5 +1,5 @@
 
-import { MidSection } from "@/components/MidSection";
+import { MidSection } from "@/app/components/MidSection";
 export default function Home() {
   
   return (
