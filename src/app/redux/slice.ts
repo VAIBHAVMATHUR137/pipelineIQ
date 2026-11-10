@@ -52,3 +52,26 @@ export const loginSlice = createSlice({
 export const {resetLogin,updateLogin}=loginSlice.actions;
 export const loginReducer=loginSlice.reducer;
 
+// slice for user primary information
+interface userInfo{
+  name:string;
+  email:string;
+  ID:number|null
+}
+const initialUserInfo:userInfo={
+  name:"",
+  email:"",
+  ID:null
+}
+export const userInfoSlice=createSlice({
+  name:"userInfoSlice",
+  initialState:initialUserInfo,
+  reducers:{
+    resetUserInfo:()=>initialUserInfo,
+    updateUserInfo:<T extends keyof userInfo>(state:userInfo,action:PayloadAction<{field:T,value:userInfo[T]}>)=>{
+      state[action.payload.field]=action.payload.value
+    }
+  }
+})
+export const {resetUserInfo,updateUserInfo}=userInfoSlice.actions;
+export const userInfoReducer=userInfoSlice.reducer

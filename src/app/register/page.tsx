@@ -28,8 +28,8 @@ export const register = () => {
         password: signinState.password,
       });
       console.log(res);
-      if (res.status === 201) {
-        router.push("/");
+      if (res.status === 201|| res.status === 200) {
+        router.push("/login");
         return { success: true };
       }
     } catch (error) {

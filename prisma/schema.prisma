@@ -31,6 +31,8 @@ model CompanyTable {
   openings OpeningTable[]
   contacts ContactsTable[]
   outreach OutreachTable[]
+
+
 }
 
 enum Platform {
@@ -114,6 +116,7 @@ model ContactsTable {
   outreach OutreachTable[]
   profile  ContactPersonProfile @relation(fields: [profileID], references: [id])
   company  CompanyTable         @relation(fields: [companyID], references: [id])
+  @@unique([userID,name,profileID,companyID])
 }
 
 model OutreachTable {

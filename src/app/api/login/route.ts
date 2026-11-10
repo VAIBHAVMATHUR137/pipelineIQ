@@ -21,6 +21,8 @@ export async function POST(request: NextRequest) {
 
     const user = await prisma.user.findUnique({ where: { email: userEmail } });
     const userName = user?.name;
+    const userID=user?.id;
+
     if (!user) {
       return NextResponse.json({ message: "User not found" }, { status: 401 });
     }
@@ -51,10 +53,10 @@ export async function POST(request: NextRequest) {
     });
     // returning response of email, name and 201 to browser 
     const res = NextResponse.json(
-      { message: "Login successful", userEmail, userName },
+      { message: "Login successful", userEmail, userName,userID },
       { status: 201 },
     );
-    
+
     const base = {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -71,7 +73,8 @@ export async function POST(request: NextRequest) {
       maxAge: 60 * 60 * 24 * 30,
     });
     return res;
-  } catch (error) {
+  } 
+  catch (error) {
     console.log("Login Error " + error);
   }
   return NextResponse.json(

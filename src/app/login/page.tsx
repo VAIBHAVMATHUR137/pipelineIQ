@@ -26,9 +26,10 @@ export const login = () => {
         email: loginState.email,
         password: loginState.password,
       });
-      if (res.status === 201) {
+      if (res.status === 201 || res.status === 200) {
         dispatch(resetLogin());
-        router.push("/");
+        router.push("/dashboard");
+ 
       }
     } catch (err) {
       console.log(

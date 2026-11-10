@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
     const payload = jwt.verify(token, secret) as { email: string };
     const user = await prisma.user.findUnique({
       where: { email: payload.email },
-      select: { name: true, email: true },
+      select: { name: true, email: true, id:true },
     });
     if (!user) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });

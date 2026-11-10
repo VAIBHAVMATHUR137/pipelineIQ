@@ -39,14 +39,13 @@ async function main() {
   });
   await prisma.stageTable.createMany({
     data: [
-{Stage:"ASSIGNMENT"},
-{Stage:"INTERVIEW"},
-{Stage:"JOB_OFFER"},
-{Stage:"WAITING_FOR_PROCESS"}
-
+      { Stage: "ASSIGNMENT" },
+      { Stage: "INTERVIEW" },
+      { Stage: "JOB_OFFER" },
+      { Stage: "WAITING_FOR_PROCESS" },
     ],
     skipDuplicates: true,
-  })
+  });
   await prisma.employmentTypeTable.createMany({
     data: [
       { emp_type: "PART_TIME" }, // 1
