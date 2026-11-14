@@ -27,6 +27,7 @@ model User {
 model CompanyTable {
   id   Int    @id @default(autoincrement())
   name String
+ normalisedName String @unique
 
   openings OpeningTable[]
   contacts ContactsTable[]
